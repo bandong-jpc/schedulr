@@ -4,15 +4,54 @@ import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
 import SemSelector from "./components/SemSelector";
 import Script from "next/script";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NewSemModal from "./components/NewSemModal";
-
-const inter = Inter({ subsets: ["latin"] });
+import { collection, doc, getDoc, getDocs } from "firebase/firestore";
+import { db } from "@/firebase";
+import { Timeslot, initTimeslots } from "./api/constants";
+import Scheduler from "./components/Scheduler";
 
 export default function Home() {
   const [show, setShow] = useState(false);
-  const [semList, setSemList] = useState([]);
+  const [semList, setSemList] = useState<string[]>([]);
+  const [timeslots, setTimeslots] = useState<Timeslot>(initTimeslots);
   const [semester, setSemester] = useState("");
+
+  const fetchSems = async () => {
+    const sems = await getDocs(collection(db, "semesters"));
+    try {
+      setSemList([]);
+      if (sems.docs.length > 0) setSemester(sems.docs[0].id);
+      sems.docs.map((document) => {
+        if (semList.indexOf(document.id) === -1) {
+          setSemList((prevSemList) => [...prevSemList, document.id]);
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchTimeslots = async () => {
+    let ts: Timeslot = initTimeslots;
+    try {
+      if (semester !== "")
+        ts =
+          ((await getDoc(doc(db, "semesters", semester))).data() as Timeslot) ||
+          initTimeslots;
+    } catch (error) {
+      console.log(error);
+    }
+    setTimeslots(ts);
+  };
+
+  useEffect(() => {
+    fetchSems();
+  }, []);
+
+  useEffect(() => {
+    fetchTimeslots();
+  }, [semester]);
 
   return (
     <>
@@ -23,11 +62,11 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}>
+      <main className="">
         <Script src="https://cdn.tailwindcss.com"></Script>
         <nav className="w-full h-11 px-5 flex bg-red-600 justify-between">
           <ul className="flex">
-            <li className="font-semibold mx-3 flex flex-col justify-center">
+            <li className="font-semibold mx-3 flex flex-col justify-center text-white">
               SCHEDULER
             </li>
           </ul>
@@ -42,7 +81,14 @@ export default function Home() {
           </div>
         </nav>
 
-        <NewSemModal show={show ?? false} setShow={setShow} />
+        <NewSemModal
+          show={show ?? false}
+          setShow={setShow}
+          setSemList={setSemList}
+          semList={semList}
+        />
+
+        <Scheduler timeslots={timeslots} />
       </main>
     </>
   );
