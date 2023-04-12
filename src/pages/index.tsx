@@ -62,33 +62,32 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="">
+      <main className="h-screen">
         <Script src="https://cdn.tailwindcss.com"></Script>
-        <nav className="w-full h-11 px-5 flex bg-red-600 justify-between">
-          <ul className="flex">
-            <li className="font-semibold mx-3 flex flex-col justify-center text-white">
+        <div className="h-full">
+          <nav className="w-full h-11 px-5 flex bg-red-600 justify-between">
+            <div className="font-semibold mx-3 flex flex-col justify-center text-white">
               SCHEDULER
-            </li>
-          </ul>
+            </div>
 
-          <div className="nav-end flex my-auto">
-            <SemSelector
-              setShow={setShow}
-              semList={semList}
-              semester={semester}
-              setSemester={setSemester}
-            />
-          </div>
-        </nav>
+            <div className="nav-end flex">
+              <SemSelector
+                setShow={setShow}
+                semList={semList}
+                semester={semester}
+                setSemester={setSemester}
+              />
+            </div>
+          </nav>
+          <NewSemModal
+            show={show ?? false}
+            setShow={setShow}
+            setSemList={setSemList}
+            semList={semList}
+          />
 
-        <NewSemModal
-          show={show ?? false}
-          setShow={setShow}
-          setSemList={setSemList}
-          semList={semList}
-        />
-
-        <Scheduler timeslots={timeslots} />
+          <Scheduler timeslots={timeslots} />
+        </div>
       </main>
     </>
   );
