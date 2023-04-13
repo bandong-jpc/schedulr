@@ -1,48 +1,15 @@
-const timeslots = {
-  "0800": "",
-  "0830": "",
-  "0900": "",
-  "0930": "",
-  "1000": "",
-  "1030": "",
-  "1100": "",
-  "1130": "",
-  "1200": "",
-  "1230": "",
-  "1300": "",
-  "1330": "",
-  "1400": "",
-  "1430": "",
-  "1500": "",
-  "1530": "",
-  "1600": "",
-  "1630": "",
-  "1700": "",
-  "1730": "",
-  "1800": "",
-  "1830": "",
-};
+interface ClassTime {
+  day: string;
+  start: string;
+  end: string;
+}
 
-const initSchedule = {
-  Mo: timeslots,
-  Tu: timeslots,
-  We: timeslots,
-  Th: timeslots,
-  Fr: timeslots,
-  Sa: timeslots,
-};
-
-const initTimeslots = {
-  ITB101: initSchedule,
-  ITB102: initSchedule,
-  ITB103: initSchedule,
-  ITB201: initSchedule,
-  ITB202: initSchedule,
-  ITB203: initSchedule,
-  ITB301: initSchedule,
-  ITB302: initSchedule,
-  ITB303: initSchedule,
-};
+interface SubjectClass {
+  code: string;
+  duration: string;
+  counter: number;
+  timeslots: ClassTime[];
+}
 
 interface Time {
   "0800": string;
@@ -90,20 +57,69 @@ interface Timeslot {
   ITB303: Schedule;
 }
 
-interface SubjectClass {
-  code: string;
-  duration: string;
-  counter: number;
-  timeslots?:
-    | [
-        {
-          day: string;
-          start: string;
-          end: string;
-        }
-      ]
-    | [];
+interface RoomSchedule {
+  rooms: Timeslot;
+  classes: SubjectClass[];
 }
 
+interface SemAction {
+  type: string;
+  payload?: {
+    semester?: RoomSchedule;
+    subject?: SubjectClass;
+    classTime?: ClassTime;
+    subjectId?: string;
+  };
+}
+
+const timeslots = {
+  "0800": "",
+  "0830": "",
+  "0900": "",
+  "0930": "",
+  "1000": "",
+  "1030": "",
+  "1100": "",
+  "1130": "",
+  "1200": "",
+  "1230": "",
+  "1300": "",
+  "1330": "",
+  "1400": "",
+  "1430": "",
+  "1500": "",
+  "1530": "",
+  "1600": "",
+  "1630": "",
+  "1700": "",
+  "1730": "",
+  "1800": "",
+  "1830": "",
+};
+
+const initSchedule = {
+  Mo: timeslots,
+  Tu: timeslots,
+  We: timeslots,
+  Th: timeslots,
+  Fr: timeslots,
+  Sa: timeslots,
+};
+
+const initTimeslots = {
+  rooms: {
+    ITB101: initSchedule,
+    ITB102: initSchedule,
+    ITB103: initSchedule,
+    ITB201: initSchedule,
+    ITB202: initSchedule,
+    ITB203: initSchedule,
+    ITB301: initSchedule,
+    ITB302: initSchedule,
+    ITB303: initSchedule,
+  },
+  classes: <SubjectClass[]>[],
+};
+
 export { timeslots, initTimeslots, initSchedule };
-export type { Timeslot, Schedule, Time, SubjectClass };
+export type { Timeslot, Schedule, Time, SubjectClass, RoomSchedule, SemAction };

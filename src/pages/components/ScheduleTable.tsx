@@ -5,20 +5,21 @@ import {
   Schedule,
   initSchedule,
   Time,
+  RoomSchedule,
 } from "../api/constants";
 
 const ScheduleTable = ({
   timeslots,
   room,
 }: {
-  timeslots: Timeslot;
+  timeslots: RoomSchedule;
   room: string;
 }) => {
   const [keyArr, setKeyArr] = useState<string[]>([]);
 
   useEffect(() => {
     setKeyArr(
-      Object.keys(timeslots[room as keyof Timeslot].Mo).sort((a, b) => {
+      Object.keys(timeslots.rooms[room as keyof Timeslot].Mo).sort((a, b) => {
         return parseInt(a) - parseInt(b);
       })
     );
@@ -63,22 +64,46 @@ const ScheduleTable = ({
               </td>
 
               <td scope="col" className="px-4 py-1 text-center text-xs w-15">
-                {timeslots[room as keyof Timeslot].Mo[keyName as keyof Time]}
+                {
+                  timeslots.rooms[room as keyof Timeslot].Mo[
+                    keyName as keyof Time
+                  ]
+                }
               </td>
               <td scope="col" className="px-4 py-1 text-center text-xs w-15">
-                {timeslots[room as keyof Timeslot].Tu[keyName as keyof Time]}
+                {
+                  timeslots.rooms[room as keyof Timeslot].Tu[
+                    keyName as keyof Time
+                  ]
+                }
               </td>
               <td scope="col" className="px-4 py-1 text-center text-xs w-15">
-                {timeslots[room as keyof Timeslot].We[keyName as keyof Time]}
+                {
+                  timeslots.rooms[room as keyof Timeslot].We[
+                    keyName as keyof Time
+                  ]
+                }
               </td>
               <td scope="col" className="px-4 py-1 text-center text-xs w-15">
-                {timeslots[room as keyof Timeslot].Th[keyName as keyof Time]}
+                {
+                  timeslots.rooms[room as keyof Timeslot].Th[
+                    keyName as keyof Time
+                  ]
+                }
               </td>
               <td scope="col" className="px-4 py-1 text-center text-xs w-15">
-                {timeslots[room as keyof Timeslot].Fr[keyName as keyof Time]}
+                {
+                  timeslots.rooms[room as keyof Timeslot].Fr[
+                    keyName as keyof Time
+                  ]
+                }
               </td>
               <td scope="col" className="px-4 py-1 text-center text-xs w-15">
-                {timeslots[room as keyof Timeslot].Sa[keyName as keyof Time]}
+                {
+                  timeslots.rooms[room as keyof Timeslot].Sa[
+                    keyName as keyof Time
+                  ]
+                }
               </td>
             </tr>
           ))}

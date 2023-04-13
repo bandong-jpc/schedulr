@@ -5,9 +5,11 @@ import ClassCard from "./ClassCard";
 const ClassSection = ({
   setShow,
   classList,
+  setClassList,
 }: {
   setShow: Dispatch<SetStateAction<boolean>>;
   classList: SubjectClass[];
+  setClassList: Dispatch<SetStateAction<SubjectClass[]>>;
 }) => {
   return (
     <div className="p-4 flex flex-col w-1/4 h-full">
@@ -20,8 +22,13 @@ const ClassSection = ({
         Add Class
       </button>
       <div className="py-4 overflow-y-auto">
-        {classList.map((c) => (
-          <ClassCard key={c.code} sub={c} />
+        {classList.map((c, i) => (
+          <ClassCard
+            key={c.code}
+            sub={c}
+            index={i}
+            setClassList={setClassList}
+          />
         ))}
       </div>
     </div>

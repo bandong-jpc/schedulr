@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { SubjectClass, Timeslot } from "../api/constants";
+import { RoomSchedule, SubjectClass, Timeslot } from "../api/constants";
 import ScheduleTable from "./ScheduleTable";
 import ClassSection from "./ClassSection";
 import NewClassModal from "./NewClassModal";
 
-const Scheduler = ({ timeslots }: { timeslots: Timeslot }) => {
+const Scheduler = ({ timeslots }: { timeslots: RoomSchedule }) => {
   const [keyArr, setKeyArr] = useState<string[]>([]);
   const [classes, setClasses] = useState<SubjectClass[]>([]);
   const [show, setShow] = useState(false);
 
   useEffect(() => {
     setKeyArr(
-      Object.keys(timeslots).sort((a, b) => {
+      Object.keys(timeslots.rooms).sort((a, b) => {
         return a.localeCompare(b);
       })
     );
@@ -34,7 +34,11 @@ const Scheduler = ({ timeslots }: { timeslots: Timeslot }) => {
         setClassList={setClasses}
       />
 
-      <ClassSection setShow={setShow} classList={classes} />
+      <ClassSection
+        setShow={setShow}
+        classList={classes}
+        setClassList={setClasses}
+      />
     </div>
   );
 };

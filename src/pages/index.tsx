@@ -4,18 +4,44 @@ import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
 import SemSelector from "./components/SemSelector";
 import Script from "next/script";
-import { useEffect, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import NewSemModal from "./components/NewSemModal";
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { db } from "@/firebase";
-import { Timeslot, initTimeslots } from "./api/constants";
+import {
+  RoomSchedule,
+  SemAction,
+  Timeslot,
+  initTimeslots,
+} from "./api/constants";
 import Scheduler from "./components/Scheduler";
+
+function semReducer(sem: RoomSchedule, action: SemAction) {
+  switch (action.type) {
+    case "added_class": {
+      const toAdd = action.payload?.subject ?? {
+        code: "",
+        duration: "",
+        counter: 0,
+        timeslots: [],
+      };
+      sem.classes.push(toAdd);
+      return sem;
+    }
+
+    default: {
+      throw Error("Unknown action: " + action.type);
+    }
+  }
+}
 
 export default function Home() {
   const [show, setShow] = useState(false);
   const [semList, setSemList] = useState<string[]>([]);
-  const [timeslots, setTimeslots] = useState<Timeslot>(initTimeslots);
+  const [timeslots, setTimeslots] = useState<RoomSchedule>(initTimeslots);
   const [semester, setSemester] = useState("");
+
+  const [sems, semsDispatch] = useReducer(semReducer, initTimeslots);
 
   const fetchSems = async () => {
     const sems = await getDocs(collection(db, "semesters"));
@@ -33,12 +59,12 @@ export default function Home() {
   };
 
   const fetchTimeslots = async () => {
-    let ts: Timeslot = initTimeslots;
+    let ts: RoomSchedule = initTimeslots;
     try {
       if (semester !== "")
-        ts =
-          ((await getDoc(doc(db, "semesters", semester))).data() as Timeslot) ||
-          initTimeslots;
+        ts = ((
+          await getDoc(doc(db, "semesters", semester))
+        ).data() as RoomSchedule) || { rooms: initTimeslots, classes: [] };
     } catch (error) {
       console.log(error);
     }
