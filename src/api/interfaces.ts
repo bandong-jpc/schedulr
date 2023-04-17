@@ -68,10 +68,10 @@ interface SemesterActions {
   payload?: {
     semester?: Semester;
     subject?: Subject;
-    /* semester?: RoomSchedule;
-    subject?: SubjectClass;
-    classTime?: ClassTime;
-    subjectId?: string; */
+    subjectIndex?: number;
+    assignment?: Assignment;
+    assignmentIndex?: number;
+    roomIndex?: number;
   };
 }
 

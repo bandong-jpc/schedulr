@@ -1,7 +1,11 @@
+import { colors } from "@/api/constants";
 import { Room, Timeslot } from "@/api/interfaces";
-import React from "react";
+import { SemesterContext } from "@/context/semContext";
+import React, { useContext } from "react";
 
 const ScheduleTable = ({ room }: { room: Room }) => {
+  const { state } = useContext(SemesterContext);
+
   return (
     <div className="flex flex-col px-4 py-4 overflow-hidden text-black">
       <h2>{room.roomId}</h2>
@@ -47,22 +51,88 @@ const ScheduleTable = ({ room }: { room: Room }) => {
                       : `${timeslot}-1900`}
                   </td>
 
-                  <td scope="col" className=" py-1 text-center text-xs w-16">
+                  <td
+                    scope="col"
+                    className={`${
+                      colors[
+                        state.classes.findIndex(
+                          (e) =>
+                            e.code ===
+                            room.schedules.Mo[timeslot as keyof Timeslot]
+                        )
+                      ]
+                    } py-1 text-center text-xs w-16`}
+                  >
                     {room.schedules.Mo[timeslot as keyof Timeslot]}
                   </td>
-                  <td scope="col" className=" py-1 text-center text-xs w-16">
+                  <td
+                    scope="col"
+                    className={`${
+                      colors[
+                        state.classes.findIndex(
+                          (e) =>
+                            e.code ===
+                            room.schedules.Tu[timeslot as keyof Timeslot]
+                        )
+                      ]
+                    } py-1 text-center text-xs w-16`}
+                  >
                     {room.schedules.Tu[timeslot as keyof Timeslot]}
                   </td>
-                  <td scope="col" className=" py-1 text-center text-xs w-16">
+                  <td
+                    scope="col"
+                    className={`${
+                      colors[
+                        state.classes.findIndex(
+                          (e) =>
+                            e.code ===
+                            room.schedules.We[timeslot as keyof Timeslot]
+                        )
+                      ]
+                    } py-1 text-center text-xs w-16`}
+                  >
                     {room.schedules.We[timeslot as keyof Timeslot]}
                   </td>
-                  <td scope="col" className=" py-1 text-center text-xs w-16">
+                  <td
+                    scope="col"
+                    className={`${
+                      colors[
+                        state.classes.findIndex(
+                          (e) =>
+                            e.code ===
+                            room.schedules.Th[timeslot as keyof Timeslot]
+                        )
+                      ]
+                    } py-1 text-center text-xs w-16`}
+                  >
                     {room.schedules.Th[timeslot as keyof Timeslot]}
                   </td>
-                  <td scope="col" className=" py-1 text-center text-xs w-16">
+                  <td
+                    scope="col"
+                    className={`${
+                      colors[
+                        state.classes.findIndex(
+                          (e) =>
+                            e.code ===
+                            room.schedules.Fr[timeslot as keyof Timeslot]
+                        )
+                      ]
+                    } py-1 text-center text-xs w-16`}
+                  >
                     {room.schedules.Fr[timeslot as keyof Timeslot]}
                   </td>
-                  <td scope="col" className=" py-1 text-center text-xs w-16">
+                  <td
+                    scope="col"
+                    className={`${
+                      colors[
+                        state.classes.findIndex(
+                          (e) =>
+                            e.code ===
+                            room.schedules.Sa[timeslot as keyof Timeslot]
+                        )
+                      ]
+                    } py-1 text-center text-xs w-16`}
+                  >
                     {room.schedules.Sa[timeslot as keyof Timeslot]}
                   </td>
                 </tr>

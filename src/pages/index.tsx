@@ -12,6 +12,10 @@ import SemesterSection from "@/components/sections/SemesterSection";
 import semReducer from "@/reducer/semReducer";
 import SchedulesSection from "@/components/sections/SchedulesSection";
 import ClassSection from "@/components/sections/ClassSection";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { fas } from "@fortawesome/free-solid-svg-icons";
+
+library.add(fas);
 
 export default function Home() {
   const [sem, semDispatch] = useReducer(semReducer, initSemester);

@@ -1,4 +1,11 @@
-import { Room, Schedule, Semester, Subject, Timeslot } from "./interfaces";
+import {
+  Assignment,
+  Room,
+  Schedule,
+  Semester,
+  Subject,
+  Timeslot,
+} from "./interfaces";
 
 const initTimeslots: Timeslot = {
   "0800": "",
@@ -73,6 +80,18 @@ const initRooms: Room[] = [
   },
 ];
 
+const roomIds = [
+  "ITB101",
+  "ITB102",
+  "ITB103",
+  "ITB201",
+  "ITB202",
+  "ITB203",
+  "ITB301",
+  "ITB302",
+  "ITB303",
+];
+
 const initSemester: Semester = {
   semesterId: "",
   rooms: initRooms,
@@ -84,6 +103,13 @@ const initSubject: Subject = {
   duration: "",
   counter: 0,
   assignments: [],
+};
+
+const initAssignment: Assignment = {
+  day: "",
+  end: "",
+  start: "",
+  room: "",
 };
 
 const colors = [
@@ -124,6 +150,8 @@ export {
   initRooms,
   initSemester,
   initSubject,
+  initAssignment,
+  roomIds,
   colors,
   invertedColors,
 };

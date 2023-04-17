@@ -1,6 +1,14 @@
-import { colors, initTimeslots, invertedColors } from "@/api/constants";
-import { Subject } from "@/api/interfaces";
-import React, { useState } from "react";
+import {
+  colors,
+  initTimeslots,
+  invertedColors,
+  roomIds,
+} from "@/api/constants";
+import { Schedule, Subject, Timeslot } from "@/api/interfaces";
+import { SemesterContext } from "@/context/semContext";
+import { faTrash, faX } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useContext, useState } from "react";
 
 const ClassCard = ({ sub, index }: { sub: Subject; index: number }) => {
   const [time, setTime] = useState({
@@ -9,6 +17,8 @@ const ClassCard = ({ sub, index }: { sub: Subject; index: number }) => {
     start: "0800",
     end: "0830",
   });
+
+  const { state, dispatch } = useContext(SemesterContext);
 
   const [error, setError] = useState(false);
 
@@ -30,6 +40,10 @@ const ClassCard = ({ sub, index }: { sub: Subject; index: number }) => {
         setTime({ ...time, day: e.target.value });
         break;
 
+      case "roomSelect":
+        setTime({ ...time, room: e.target.value });
+        break;
+
       case "startSelect":
         setTime({ ...time, start: e.target.value });
         break;
@@ -49,11 +63,10 @@ const ClassCard = ({ sub, index }: { sub: Subject; index: number }) => {
     return Math.floor(duration / 100) + (duration % 100) / 60;
   }
 
-  const onAdd = () => {
+  const onAddAssignment = () => {
     const start = parseFloat(time.start);
     const end = parseFloat(time.end);
-
-    if (start >= end) {
+    if (start >= end || end - start <= 70) {
       setError(true);
       return;
     }
@@ -68,20 +81,65 @@ const ClassCard = ({ sub, index }: { sub: Subject; index: number }) => {
       setError(true);
       return;
     }
+
+    let updatedSub = {
+      ...sub,
+    };
+
+    updatedSub.assignments.push(time);
+    updatedSub.counter = newCount;
+
+    dispatch({
+      type: "added_assignment",
+      payload: {
+        semester: state,
+        subject: updatedSub,
+        subjectIndex: index,
+        assignment: time,
+      },
+    });
+  };
+
+  const onDelete = () => {
+    dispatch({
+      type: "deleted_class",
+      payload: {
+        subject: sub,
+      },
+    });
+  };
+
+  const onDeleteAssignment = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const idx = e.currentTarget.value;
   };
 
   return (
     <div
       className={`my-2 p-2 rounded-md flex flex-col text-xs ${colors[index]}`}
     >
-      <h5 className="font-semibold">{sub.code}</h5>
+      <div className="flex justify-between">
+        <h5 className="font-semibold">{sub.code}</h5>
+        <button onClick={onDelete}>
+          <FontAwesomeIcon icon={faTrash} />
+        </button>
+      </div>
+
       <div>Duration: {sub.duration} HRS</div>
       <div>
         Time:{" "}
         {sub.assignments.map((t, i) => {
-          return `${t.day} ${t.start}-${t.end}${
-            i < sub.assignments.length - 1 ? "; " : ""
-          }`;
+          return (
+            <div key={i} className="flex">
+              <div>{`${t.room} ${t.day} ${t.start}-${t.end}`}</div>
+              <button
+                className="align-middle ml-2"
+                value={i}
+                onClick={onDeleteAssignment}
+              >
+                <FontAwesomeIcon icon={faX} />
+              </button>
+            </div>
+          );
         })}
       </div>
       {parseFloat(sub.duration) > sub.counter ? (
@@ -91,7 +149,7 @@ const ClassCard = ({ sub, index }: { sub: Subject; index: number }) => {
               value={time.day}
               id="daySelect"
               onChange={onTimeChange}
-              className={`w-3/6 px-3 form-control rounded-md text-sm ${invertedColors[index]} font-semibold`}
+              className={`w-3/6 mr-2 px-3 form-control rounded-md text-sm ${invertedColors[index]} font-semibold`}
             >
               <option value="Mo">Monday</option>
               <option value="Tu">Tuesday</option>
@@ -101,12 +159,22 @@ const ClassCard = ({ sub, index }: { sub: Subject; index: number }) => {
               <option value="Sa">Saturday</option>
             </select>
 
-            <button
-              onClick={onAdd}
-              className={`w-2/6 mx-1 text-sm rounded-md border-white border ${invertedColors[index]} hover:${colors[index]} hover:text-white font-semibold `}
+            <select
+              value={time.room}
+              id="roomSelect"
+              onChange={onTimeChange}
+              className={`w-3/6 ml-2 px-3 form-control rounded-md text-sm ${invertedColors[index]} font-semibold`}
             >
-              SET
-            </button>
+              <option value="ITB101">ITB101</option>
+              <option value="ITB102">ITB102</option>
+              <option value="ITB103">ITB103</option>
+              <option value="ITB201">ITB201</option>
+              <option value="ITB202">ITB202</option>
+              <option value="ITB203">ITB203</option>
+              <option value="ITB301">ITB301</option>
+              <option value="ITB302">ITB302</option>
+              <option value="ITB303">ITB303</option>
+            </select>
           </div>
 
           <div className="flex my-1 justify-between">
@@ -123,11 +191,17 @@ const ClassCard = ({ sub, index }: { sub: Subject; index: number }) => {
                 }  font-semibold ${error ? "border-2 border-red-600" : ""}`}
               >
                 {startTimes.map((t) => {
-                  return (
-                    <option key={t} value={t}>
-                      {t}
-                    </option>
-                  );
+                  if (
+                    state.rooms[roomIds.findIndex((e) => e === time.room)]
+                      .schedules[time.day as keyof Schedule][
+                      t as keyof Timeslot
+                    ] === ""
+                  )
+                    return (
+                      <option key={t} value={t}>
+                        {t}
+                      </option>
+                    );
                 })}
               </select>
             </div>
@@ -145,15 +219,35 @@ const ClassCard = ({ sub, index }: { sub: Subject; index: number }) => {
                 }  font-semibold ${error ? "border-2 border-red-600" : ""}`}
               >
                 {endTimes.map((t) => {
-                  return (
-                    <option key={t} value={t}>
-                      {t}
-                    </option>
-                  );
+                  if (
+                    state.rooms[roomIds.findIndex((e) => e === time.room)]
+                      .schedules[time.day as keyof Schedule][
+                      t as keyof Timeslot
+                    ] === ""
+                  )
+                    return (
+                      <option key={t} value={t}>
+                        {t}
+                      </option>
+                    );
                 })}
+                {state.rooms[roomIds.findIndex((e) => e === time.room)]
+                  .schedules[time.day as keyof Schedule]["1830"] === "" ? (
+                  <option key="1900" value="1900">
+                    1900
+                  </option>
+                ) : (
+                  <></>
+                )}
               </select>
             </div>
           </div>
+          <button
+            onClick={onAddAssignment}
+            className={` text-sm rounded-md border-white border ${invertedColors[index]} hover:${colors[index]} hover:text-white font-semibold `}
+          >
+            SET
+          </button>
         </div>
       ) : (
         <div></div>
